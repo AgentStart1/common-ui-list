@@ -7,6 +7,8 @@ import com.storyteller_f.ui_list.database.RemoteKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
@@ -87,6 +89,29 @@ class SimpleDataRepositoryTest {
 
         assertSame(first.await(), second.await())
         assertEquals(listOf(1), requestedPages)
+    }
+
+    @Test
+    fun `retries initialization after the first request is cancelled`() = runBlocking {
+        val started = CompletableDeferred<Unit>()
+        var requestCount = 0
+        val repository = SimpleDataRepository<TestDatum, RemoteKey> { page, _ ->
+            requestCount++
+            if (requestCount == 1) {
+                started.complete(Unit)
+                awaitCancellation()
+            }
+            CommonResponse(items = listOf(TestDatum("item-$page")))
+        }
+
+        val initialRequest = async { repository.obtainResult() }
+        started.await()
+        initialRequest.cancelAndJoin()
+
+        val results = repository.obtainResult()
+
+        assertEquals(2, requestCount)
+        assertEquals(listOf(TestDatum("item-1")), results.first())
     }
 
     @Test

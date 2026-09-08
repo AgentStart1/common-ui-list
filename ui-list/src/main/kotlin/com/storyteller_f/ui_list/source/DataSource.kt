@@ -6,6 +6,7 @@ import com.storyteller_f.ui_list.core.DataItemHolder
 import com.storyteller_f.ui_list.core.Datum
 import com.storyteller_f.ui_list.data.CommonResponse
 import com.storyteller_f.ui_list.database.RemoteKey
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,8 +47,7 @@ class SimpleDataRepository<D : Datum<RK>, RK : RemoteKey>(
     suspend fun obtainResult(): Flow<List<D>> {
         initializationMutex.withLock {
             if (!initialized) {
-                initialized = true
-                requestNextPage()
+                initialized = requestNextPage()
             }
         }
         return results
@@ -77,17 +77,15 @@ class SimpleDataRepository<D : Datum<RK>, RK : RemoteKey>(
         }
     }
 
-    private suspend fun requestNextPage() {
-        isRequestInProgress.withLock {
-            requestNextPageLocked()
-        }
-    }
+    private suspend fun requestNextPage(): Boolean =
+        isRequestInProgress.withLock { requestNextPageLocked() }
 
-    private suspend fun requestNextPageLocked() {
+    private suspend fun requestNextPageLocked(): Boolean {
         val successful = requestPage(lastRequestedPage + 1)
         if (successful) {
             lastRequestedPage++
         }
+        return successful
     }
 
     private suspend fun SimpleDataRepository<D, RK>.requestPage(pages: Int): Boolean {
@@ -104,6 +102,8 @@ class SimpleDataRepository<D : Datum<RK>, RK : RemoteKey>(
                 )
             )
             return true
+        } catch (exception: CancellationException) {
+            throw exception
         } catch (exception: Exception) {
             Log.e(TAG, "requestPage: ", exception)
             loadState.emit(MoreInfoLoadState(LoadState.Error(exception), inMemoryCache.size))
