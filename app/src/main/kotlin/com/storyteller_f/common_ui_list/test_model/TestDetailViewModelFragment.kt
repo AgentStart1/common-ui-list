@@ -21,7 +21,7 @@ import com.storyteller_f.common_ui_list.databinding.FragmentTestDetailBinding
 import com.storyteller_f.common_ui_list.db.RepoDatabase
 import com.storyteller_f.common_ui_list.db.requireRepoDatabase
 import com.storyteller_f.common_vm_ktx.vm
-import com.storyteller_f.ui_list.source.DetailHandler
+import com.storyteller_f.common_ui_list.source.DetailHandler
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -68,7 +68,7 @@ private class TestDetailViewModel(
 ) : ViewModel() {
     private val detailHandler = DetailHandler(
         producer = {
-            service.searchRepos(1, 1).items.first()
+            service.searchRepos("Android", 1, 1).items.first()
         },
         local = {
             database.reposDao().select()

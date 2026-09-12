@@ -40,7 +40,7 @@ import com.storyteller_f.common_ui_list.api.ReposService
 import com.storyteller_f.common_ui_list.api.requireReposService
 import com.storyteller_f.common_ui_list.databinding.ActivityMainBinding
 import com.storyteller_f.common_ui_list.db.RepoDatabase
-import com.storyteller_f.common_ui_list.db.composite.RepoComposite
+import com.storyteller_f.common_ui_list.db.RepoComposite
 import com.storyteller_f.common_ui_list.db.requireRepoDatabase
 import com.storyteller_f.common_ui_list.holders.RepoItemHolder
 import com.storyteller_f.common_ui_list.holders.seprator.SeparatorItemHolder
@@ -52,8 +52,8 @@ import com.storyteller_f.common_vm_ktx.vm
 import com.storyteller_f.ui_list.core.AbstractViewHolder
 import com.storyteller_f.ui_list.core.BuildBatch
 import com.storyteller_f.ui_list.core.DataItemHolder
-import com.storyteller_f.ui_list.source.SimpleSourceRepository
-import com.storyteller_f.ui_list.source.SourceHandler
+import com.storyteller_f.common_ui_list.source.SimpleSourceRepository
+import com.storyteller_f.common_ui_list.source.SourceHandler
 import com.storyteller_f.common_ui_list.ui.ListWithState
 import com.storyteller_f.common_ui.viewBinding
 import com.storyteller_f.view_holder_compose.ComposeSourceAdapter
@@ -253,7 +253,7 @@ private class MainViewModel(
     private val sourceHandler = SourceHandler(
         SimpleSourceRepository(
             { page, count ->
-                service.searchRepos(page, count)
+                service.searchRepos("Android", page, count)
             },
             RepoComposite(database),
             {
