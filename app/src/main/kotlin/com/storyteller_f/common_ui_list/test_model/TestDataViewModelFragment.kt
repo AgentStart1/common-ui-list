@@ -7,6 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import com.storyteller_f.common_ui_list.R
 import com.storyteller_f.common_ui_list.api.ReposService
 import com.storyteller_f.common_ui_list.api.requireReposService
@@ -14,15 +15,17 @@ import com.storyteller_f.common_ui_list.databinding.FragmentTestDataBinding
 import com.storyteller_f.common_ui_list.holders.RepoItemHolder
 import com.storyteller_f.common_ui_list.holders.RepoViewHolder
 import com.storyteller_f.common_ui_list.holders.ui_list.registerRepoItemHolder
+import com.storyteller_f.common_ui_list.model.Repo
 import com.storyteller_f.common_vm_ktx.vm
 import com.storyteller_f.ext_func_definition.ExtFuncFlat
 import com.storyteller_f.ext_func_definition.ExtFuncFlatType
-import com.storyteller_f.ui_list.adapter.SimpleDataAdapter
+import com.storyteller_f.ui_list.adapter.SimpleSourceAdapter
 import com.storyteller_f.ui_list.core.BuildBatch
 import com.storyteller_f.ui_list.core.DataItemHolder
 import com.storyteller_f.common_ui.viewBinding
-import com.storyteller_f.ui_list.source.DataHandler
-import com.storyteller_f.ui_list.source.SimpleDataRepository
+import com.storyteller_f.ui_list.data.SimpleResponse
+import com.storyteller_f.ui_list.source.SearchHandler
+import com.storyteller_f.ui_list.source.SimpleSearchRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
@@ -47,7 +50,7 @@ open class TestDataViewModelFragment : Fragment(R.layout.fragment_test_data) {
     }) { dependencies: TestDataDependencies ->
         TestDataViewModel(dependencies.service)
     }
-    private val adapter = SimpleDataAdapter<RepoItemHolder, RepoViewHolder>(
+    private val adapter = SimpleSourceAdapter<RepoItemHolder, RepoViewHolder>(
         mutableMapOf<KClass<out DataItemHolder>, BuildBatch>().apply {
             registerRepoItemHolder(this)
         }
@@ -56,7 +59,7 @@ open class TestDataViewModelFragment : Fragment(R.layout.fragment_test_data) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.listWithState.dataUp(adapter, viewLifecycleOwner, data.dataHandler)
+        binding.listWithState.sourceUp(adapter, viewLifecycleOwner)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 data.content.collectLatest {
@@ -74,12 +77,14 @@ private data class TestDataDependencies(
 private class TestDataViewModel(
     service: ReposService,
 ) : ViewModel() {
-    val dataHandler = DataHandler(
-        SimpleDataRepository { page, size ->
-            service.searchRepos(page, size)
+    private val searchHandler = SearchHandler(
+        SimpleSearchRepository<Repo, Unit> { _, page, size ->
+            service.searchRepos(page, size).let { response ->
+                SimpleResponse(response.total, response.items, response.nextPage)
+            }
         },
-        { repo -> RepoItemHolder(repo) },
+        { repo, _ -> RepoItemHolder(repo) },
     )
 
-    val content = dataHandler.content
+    val content = searchHandler.search(Unit, viewModelScope)
 }
