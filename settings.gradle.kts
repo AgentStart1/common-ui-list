@@ -5,9 +5,6 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
-        maven {
-            setUrl("https://jitpack.io")
-        }
     }
 }
 dependencyResolutionManagement {
@@ -16,14 +13,11 @@ dependencyResolutionManagement {
         maven { setUrl("https://maven.aliyun.com/repository/central") }
         google()
         mavenCentral()
-        maven { setUrl("https://jitpack.io") }
         maven { setUrl("https://artifactory.cronapp.io/public-release/") }
     }
 }
 rootProject.name = "common_ui_list"
-if (System.getenv()["JITPACK"] == null) {
-    include(":app")
-}
+include(":app")
 
 include(":ui-list")
 include(":view-holder-compose")

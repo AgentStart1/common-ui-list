@@ -82,7 +82,6 @@ kotlin {
 }
 
 dependencies {
-//    implementation(libs.startup)
     implementation(project(":compat-ktx"))
     implementation(project(":common-ui"))
     implementation(project(":common-vm-ktx"))
