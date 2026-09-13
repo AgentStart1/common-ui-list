@@ -1,7 +1,7 @@
 package com.storyteller_f.common_ui_list.source
 
-import androidx.paging.PagingSource
 import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.storyteller_f.common_ui_list.data.SimpleResponse
 import com.storyteller_f.common_ui_list.model.Model
@@ -11,8 +11,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test

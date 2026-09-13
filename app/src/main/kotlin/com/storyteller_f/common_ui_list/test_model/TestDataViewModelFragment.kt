@@ -28,8 +28,8 @@ import com.storyteller_f.ext_func_definition.ExtFuncFlatType
 import com.storyteller_f.ui_list.adapter.SimpleSourceAdapter
 import com.storyteller_f.ui_list.core.BuildBatch
 import com.storyteller_f.ui_list.core.DataItemHolder
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -106,8 +106,11 @@ private class TestDataViewModel(
         .debounce(SEARCH_DEBOUNCE_MILLIS)
         .distinctUntilChanged()
         .flatMapLatest { value ->
-            if (value.isEmpty()) flowOf(PagingData.empty())
-            else searchHandler.search(value, viewModelScope)
+            if (value.isEmpty()) {
+                flowOf(PagingData.empty())
+            } else {
+                searchHandler.search(value, viewModelScope)
+            }
         }
 
     fun search(value: String) {

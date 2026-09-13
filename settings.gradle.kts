@@ -13,6 +13,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven { setUrl("https://maven.aliyun.com/repository/central") }
         google()
         mavenCentral()
         maven { setUrl("https://jitpack.io") }

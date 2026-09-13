@@ -14,14 +14,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
+import com.storyteller_f.common_ui_list.R
 import com.storyteller_f.common_ui_list.api.ReposService
 import com.storyteller_f.common_ui_list.api.requireReposService
-import com.storyteller_f.common_ui_list.R
 import com.storyteller_f.common_ui_list.databinding.FragmentTestDetailBinding
 import com.storyteller_f.common_ui_list.db.RepoDatabase
 import com.storyteller_f.common_ui_list.db.requireRepoDatabase
-import com.storyteller_f.common_vm_ktx.vm
 import com.storyteller_f.common_ui_list.source.DetailHandler
+import com.storyteller_f.common_vm_ktx.vm
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
